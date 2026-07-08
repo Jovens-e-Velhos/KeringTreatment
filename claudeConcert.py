@@ -129,12 +129,12 @@ def extrair_rows(caminho_planilha):
             continue
 
         status_raw = clean_str(row[COL["status"]]) if len(row) > COL["status"] else ""
-        status_raw = status_raw.replace(".", "")
+        # status_raw = status_raw.replace(".", "")
         status = status_raw.upper()
         inv_rec = parse_date(row[COL["inv_receipt"]]) if len(row) > COL["inv_receipt"] else None
 
         if not inv_rec or inv_rec < DATA_CORTE:
-            skipped_data += 1
+            skipped_data += 1                
             continue
         else:
             if row[23] == "BALENCIAGA":
@@ -584,12 +584,12 @@ let tModes={balenciaga:'all',bottega:'all',ysl:'all',gucci:'all'};
 function isN(x){return x!=null&&typeof x==='number'&&x>=0&&x<=120;}
 function avN(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:null;}
 function getStage(s){
-  if(['WAITING GL','WAITING PRE ALERT'].includes(s)) return 'Waiting GL';
-  if(['WAITING ARRIVAL','WAITING IBAMA','WAITING CITES ORIGIN'].includes(s)) return 'Waiting ARR';
-  if(['WAITING ID REGISTER','WAITING CARGO ATTENDANCE'].includes(s)) return 'Waiting ID Reg';
+  if(s==='WAITING GL') return 'Waiting GL';
+  if(s==='WAITING ARRIVAL') return 'Waiting ARR';
+  if(s==='WAITING ID REGISTER') return 'Waiting ID Reg';
   if(s==='WAITING CUSTOMS CLEARANCE') return 'Waiting CC';
   if(s==='WAITING NF') return 'Waiting NF';
-  if(['WAITING DELIVERY SCHEDULE','DELIVERY SCHEDULED','WAITING DELIVERY'].includes(s)) return 'Waiting POD';
+  if(s==='WAITING DELIVERY SCHEDULE') return 'Waiting POD';
   return 'Waiting ARR';
 }
 function pc(p){
@@ -621,7 +621,7 @@ function compute(rs){
   for(const st of STAGE_ORDER){
     const sr=rs.filter(r=>getStage(r[4])===st);
     if(!sr.length) continue;
-    pipe.push({l:st,cs:[uniq(sr.map(r=>r[1])),uniq(sr.map(r=>r[15]))||sr.length,sr.reduce((s,r)=>s+r[2],0),sr.reduce((s,r)=>s+r[3],0)],c:STAGE_C[st]});
+    pipe.push({l:st,cs:[uniq(sr.filter(r=>r[1]!=='TO CONFIRM').map(r=>r[1])),uniq(sr.map(r=>r[15]))||sr.length,sr.reduce((s,r)=>s+r[2],0),sr.reduce((s,r)=>s+r[3],0)],c:STAGE_C[st]});
   }
   // stages
   const stgM={};rs.forEach(r=>{const s=getStage(r[4]);stgM[s]=(stgM[s]||0)+1;});
@@ -672,7 +672,8 @@ function compute(rs){
     return{shipment:ship,invoices:d2.invSet.size||d2.lts.length,location:locs,
       milestones:[{key:'Invoice→GL',val:ma(10),sla:7,color:'#93c5fd'},{key:'ARR→ID Reg',val:ma(11),sla:2,color:'#60a5fa'},{key:'ID Reg→CC',val:ma(12),sla:1,color:'#3b82f6'},{key:'CC→NF',val:ma(13),sla:nps,color:'#2563eb'},{key:'NF→POD',val:ma(14),sla:nps,color:'#1d4ed8'}]};
   });
-  return{color:BRAND_C[brand]||'#3b82f6',transit:uinv-delayedInv,delayed:delayedInv,ships,inv:uinv,boxes,items,pipeline:pipe,stages,statuses,avgs,vol,trend,sla,nfpod,del_list};
+  const aanjo = rs.map(r => r[1]);
+  return{color:BRAND_C[brand]||'#3b82f6',transit:uinv-delayedInv,delayed:delayedInv,ships,inv:uinv,boxes,items,pipeline:pipe,stages,statuses,avgs,vol,trend,sla,nfpod,del_list, aanjo};
 }
 
 // ── FILTER ───────────────────────────────────────────────────
@@ -780,6 +781,9 @@ function drawPipe(brand){
     stages.forEach((s,si)=>{
       const v=s.cs[lv];const tot=totals[lv]||1;const pct=tot>0?(v/tot*100).toFixed(1):'0';
       const isLast=si===stages.length-1;
+      console.log("VICTOR BOSTA");
+      console.log(s);
+
       h+=`<div class="pcell"><div class="pcval" style="color:${s.c};font-size:${lv===0?18:lv===1?20:lv===2?16:15}px">${v.toLocaleString()}</div><div class="pcpct">${pct}%</div><div class="pcbar" style="background:${s.c};opacity:${lv===0?0.9:lv===1?0.75:lv===2?0.6:0.45}"></div>${!isLast?'<div class="pcarr">›</div>':''}</div>`;
     });
     h+='</div>';

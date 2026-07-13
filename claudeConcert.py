@@ -40,13 +40,13 @@ DATA_CORTE   = datetime.datetime(2026, 4, 1)   # Invoice Receipt >= esta data
 STATUS_VALIDOS = {
     "WAITING ID REGISTER",
     "WAITING NF",
+    "WAITING ARRIVAL",
     "WAITING DELIVERY SCHEDULE",
     "DELIVERY SCHEDULED",
     "WAITING CARGO ATTENDANCE",
     "WAITING PRE ALERT",
     "WAITING GL",
     "WAITING CUSTOMS CLEARANCE",
-    "DELIVERED",
 }
 # EXCLUIDOS propositalmente: WAITING ARRIVAL, WAITING IBAMA, e qualquer outro
 
@@ -58,7 +58,7 @@ STATUS_VALIDOS = {
 # N=13 lt_cc_nf   O=14 lt_nf_pod  P=15 CLIENTE
 COL = {
     "shipment": 0, "invoice": 1, "boxes": 2, "items": 3, "status": 4,
-    "loc": 5, "channel": 6, "sla_st": 7, "inv_receipt": 8, "eta": 10,
+    "loc": 5, "channel": 6, "status_lead": 7, "inv_receipt": 8, "eta": 10,
     "lt_ig": 16, "lt_ai": 18, "lt_ic": 19, "lt_cn": 21, "lt_np": 22,
     "brand": 23
 }
@@ -104,7 +104,7 @@ def clean_str(v):
 
 def extrair_rows(caminho_planilha):
     """Le a planilha e retorna uma lista de linhas no formato:
-    [brand, ship, boxes, items, status, loc, channel, sla_st,
+    [brand, ship, boxes, items, status, loc, channel, status_lead,
      inv_receipt(str YYYY-MM-DD), eta(str|None), lt_ig, lt_ai, lt_ic,
      lt_cn, lt_np, invoice]
     Aplica os filtros de data e de status."""
@@ -134,7 +134,7 @@ def extrair_rows(caminho_planilha):
         inv_rec = parse_date(row[COL["inv_receipt"]]) if len(row) > COL["inv_receipt"] else None
 
         if not inv_rec or inv_rec < DATA_CORTE:
-            skipped_data += 1                
+            skipped_data += 1            
             continue
         else:
             if row[23] == "BALENCIAGA":
@@ -154,11 +154,11 @@ def extrair_rows(caminho_planilha):
         items = int(row[COL["items"]]) if isinstance(row[COL["items"]], (int, float)) else 0
         loc = clean_str(row[COL["loc"]]) or "-"
         channel = clean_str(row[COL["channel"]])
-        sla_st = clean_str(row[COL["sla_st"]])
+        status_lead = clean_str(row[COL["status_lead"]])
         brand = clean_str(row[COL["brand"]]).upper()
 
         rows_out.append([
-            brand, ship, boxes, items, status, loc, channel, sla_st,
+            brand, ship, boxes, items, status, loc, channel, status_lead,
             inv_rec.strftime("%Y-%m-%d"),
             eta.strftime("%Y-%m-%d") if eta else None,
             val_lt(row[COL["lt_ig"]]),
@@ -1033,7 +1033,7 @@ def montar_html(rows, timestamp_str):
 // Gerado em: {timestamp_str} (fuso Brasilia - BR)
 // Campos por linha (16 indices):
 // [0]brand [1]ship [2]boxes [3]items [4]status [5]loc [6]channel
-// [7]sla_st [8]inv_receipt(YYYY-MM-DD) [9]eta(YYYY-MM-DD|null)
+// [7]status_lead [8]inv_receipt(YYYY-MM-DD) [9]eta(YYYY-MM-DD|null)
 // [10]lt_ig [11]lt_ai [12]lt_ic [13]lt_cn [14]lt_np [15]invoice
 const ALL_ROWS={rows_json};
 // ── FIM DOS DADOS ────────────────────────────────────────────"""

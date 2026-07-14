@@ -332,7 +332,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) s
 /* PIPELINE */
 .pwrap{background:rgba(12,19,36,.95);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:4px}
 .phdr{display:grid;border-bottom:1px solid var(--line)}
-.phdr-cell{padding:6px 13px;border-right:1px solid var(--line);font-size:7px;color:#2a3f5f;text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.phdr-cell{padding:6px 13px;border-right:1px solid var(--line);font-size:7px;color:#dbeafe;text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
 .phdr-cell:last-child{border-right:none}
 .plevel{display:grid;border-bottom:1px solid rgba(30,45,69,.5)}
 .plevel:last-child{border-bottom:none}
@@ -564,8 +564,8 @@ JS_AFTER_DATA_TEMPLATE = """
 
 // ── CONFIGURAÇÃO ─────────────────────────────────────────────
 const WEEK_RANGES={WEEK_RANGES_JSON};
-const STAGE_C={'Waiting GL':'#38bdf8','Waiting ARR':'#a78bfa','Waiting ID Reg':'#fbbf24','Waiting CC':'#fb923c','Waiting NF':'#f472b6','Waiting POD':'#34d399'};
-const STAGE_ORDER=['Waiting GL','Waiting ARR','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD'];
+const STAGE_C={'Waiting GL':'#38bdf8','Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399'};
+const STAGE_ORDER=['Waiting GL','Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD'];
 const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING DELIVERY SCHEDULE':'#34d399','DELIVERY SCHEDULED':'#21c3b0','WAITING PRE ALERT':'#a78bfa','WAITING GL':'#38bdf8','WAITING ARRIVAL':'#60a5fa','WAITING CARGO ATTENDANCE':'#fb923c','WAITING IBAMA':'#f87171','WAITING CUSTOMS CLEARANCE':'#fde047'};
 const NF_ST=new Set(['DELIVERED','DELIVERY SCHEDULED','WAITING CARGO ATTENDANCE','WAITING CUSTOMS CLEARANCE','WAITING DELIVERY SCHEDULE','WAITING NF']);
 const BRAND_C={'BALENCIAGA':'#93c5fd','BOTTEGA':'#60a5fa','GUCCI':'#1d4ed8','YSL':'#3b82f6'};
@@ -585,12 +585,11 @@ function isN(x){return x!=null&&typeof x==='number'&&x>=0&&x<=120;}
 function avN(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:null;}
 function getStage(s){
   if(s==='WAITING GL') return 'Waiting GL';
-  if(s==='WAITING ARRIVAL') return 'Waiting ARR';
+  if(s==='WAITING CARGO ATTENDANCE') return 'Waiting Cargo Attendance';
   if(s==='WAITING ID REGISTER') return 'Waiting ID Reg';
   if(s==='WAITING CUSTOMS CLEARANCE') return 'Waiting CC';
   if(s==='WAITING NF') return 'Waiting NF';
   if(s==='WAITING DELIVERY SCHEDULE') return 'Waiting POD';
-  return 'Waiting ARR';
 }
 function pc(p){
   if(p>=90)return'#22c55e';if(p>=80)return'#93c5fd';if(p>=70)return'#60a5fa';
@@ -611,7 +610,7 @@ function compute(rs){
   const brand=rs[0][0];
   const delayed=rs.filter(r=>r[7]==='DELAYED');
   const uniq=a=>new Set(a.filter(Boolean)).size;
-  const ships=uniq(rs.map(r=>r[1]));
+  const ships=uniq(rs.filter(r=>r[1]!=='TO CONFIRM').map(r=>r[1]));
   const uinv=uniq(rs.map(r=>r[15]))||rs.length;
   const delayedInv=uniq(delayed.map(r=>r[15]))||delayed.length;
   const boxes=rs.reduce((s,r)=>s+r[2],0);
@@ -744,7 +743,7 @@ function drawSbar(brand){
   const d=DATA[brand];const el=document.getElementById('sbar-'+brand);if(!el||!d)return;
   const hasD=d.del_list&&d.del_list.length>0;
   const totD=hasD?d.del_list.reduce((s,x)=>s+x.invoices,0):0;
-  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>IN TRANSIT &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
+  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>ON TIME &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
   if(hasD){
     h+=`<div class="sdiv"></div><div class="spill delayed"><span class="sdot" style="background:#ef4444"></span>DELAYED &nbsp;<strong>${totD}</strong></div>
     <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>
@@ -768,7 +767,7 @@ function drawKpis(brand){
 // ── PIPELINE ─────────────────────────────────────────────────
 function drawPipe(brand){
   const d=DATA[brand];const el=document.getElementById('pipe-'+brand);if(!el||!d)return;
-  const stages=d.pipeline;if(!stages||!stages.length){el.innerHTML='<div style="padding:16px;color:#2a3f5f;font-size:10px">No data for current filter</div>';return;}
+  const stages=d.pipeline;if(!stages||!stages.length){el.innerHTML='<div style="padding:16px;color:#dbeafe;font-size:10px">No data for current filter</div>';return;}
   const cols=stages.length;
   const totals=[0,1,2,3].map(i=>stages.reduce((s,st)=>s+st.cs[i],0));
   const lvlLbls=['Shipments','Invoices','Boxes','Items'];

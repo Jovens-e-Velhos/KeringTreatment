@@ -564,8 +564,8 @@ JS_AFTER_DATA_TEMPLATE = """
 
 // ── CONFIGURAÇÃO ─────────────────────────────────────────────
 const WEEK_RANGES={WEEK_RANGES_JSON};
-const STAGE_C={'Waiting GL':'#38bdf8','Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399'};
-const STAGE_ORDER=['Waiting GL','Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD'];
+const STAGE_C={'Waiting GL':'#38bdf8','Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399', 'Delivery Scheduled':'#21c3b0', 'Waiting Pre Alert': '#a78bfa', 'Waiting Arr': '#60a5fa'};
+const STAGE_ORDER=['Waiting GL','Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD', 'Delivery Scheduled'];
 const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING DELIVERY SCHEDULE':'#34d399','DELIVERY SCHEDULED':'#21c3b0','WAITING PRE ALERT':'#a78bfa','WAITING GL':'#38bdf8','WAITING ARRIVAL':'#60a5fa','WAITING CARGO ATTENDANCE':'#fb923c','WAITING IBAMA':'#f87171','WAITING CUSTOMS CLEARANCE':'#fde047'};
 const NF_ST=new Set(['DELIVERED','DELIVERY SCHEDULED','WAITING CARGO ATTENDANCE','WAITING CUSTOMS CLEARANCE','WAITING DELIVERY SCHEDULE','WAITING NF']);
 const BRAND_C={'BALENCIAGA':'#93c5fd','BOTTEGA':'#60a5fa','GUCCI':'#1d4ed8','YSL':'#3b82f6'};
@@ -590,6 +590,9 @@ function getStage(s){
   if(s==='WAITING CUSTOMS CLEARANCE') return 'Waiting CC';
   if(s==='WAITING NF') return 'Waiting NF';
   if(s==='WAITING DELIVERY SCHEDULE') return 'Waiting POD';
+  if(s==='DELIVERY SCHEDULED') return 'Delivery Scheduled';
+  if(s==='WAITING PRE ALERT') return 'Waiting Pre Alert';
+  if(s==='WAITING ARRIVAL') return 'Waiting Arr';
 }
 function pc(p){
   if(p>=90)return'#22c55e';if(p>=80)return'#93c5fd';if(p>=70)return'#60a5fa';
@@ -749,7 +752,8 @@ function drawSbar(brand){
     <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>
     <button class="dbtn" onclick="openMod('${brand}')"><span class="ddot"></span>View Delayed Shipments</button>`;
   } else {
-    h+=`<div class="sdiv"></div><div class="spill ok"><span class="sdot" style="background:#22c55e"></span>NO DELAYED PROCESSES</div>`;
+    h+=`<div class="sdiv"></div><div class="spill ok"><span class="sdot" style="background:#22c55e"></span>NO DELAYED PROCESSES</div>
+    <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>`;
   }
   el.innerHTML=h;
 }
@@ -781,7 +785,6 @@ function drawPipe(brand){
       const v=s.cs[lv];const tot=totals[lv]||1;const pct=tot>0?(v/tot*100).toFixed(1):'0';
       const isLast=si===stages.length-1;
       console.log("VICTOR BOSTA");
-      console.log(s);
 
       h+=`<div class="pcell"><div class="pcval" style="color:${s.c};font-size:${lv===0?18:lv===1?20:lv===2?16:15}px">${v.toLocaleString()}</div><div class="pcpct">${pct}%</div><div class="pcbar" style="background:${s.c};opacity:${lv===0?0.9:lv===1?0.75:lv===2?0.6:0.45}"></div>${!isLast?'<div class="pcarr">›</div>':''}</div>`;
     });
@@ -861,6 +864,7 @@ function drawBlist(id,items){
   if(!items||!items.length){el.innerHTML='<div style="color:#263545;font-size:10px;padding:8px 0">No data</div>';return;}
   const max=Math.max(...items.map(s=>s.v),1);
   el.innerHTML=items.map(s=>`<div class="brow"><div class="bnm" title="${s.n}">${s.n}</div><div class="bbg"><div class="bfill" style="width:${s.v/max*100}%;background:${s.c}"></div></div><div class="bval">${s.v}</div></div>`).join('');
+  console.log(items);
 }
 
 // ── VOLUME ───────────────────────────────────────────────────
@@ -975,6 +979,8 @@ function renderAll(){
     drawSbar(brand);drawKpis(brand);drawPipe(brand);
     drawTrend(brand);drawFunnel(brand);
     drawBlist('stage-'+brand,d.stages);
+    console.log(d.statuses);
+    console.log('Acima statuses');
     drawBlist('status-'+brand,d.statuses);
     drawVol(brand);drawSla(brand);drawNfPod(brand);
   });

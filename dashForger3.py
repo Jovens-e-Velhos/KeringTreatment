@@ -44,8 +44,6 @@ STATUS_VALIDOS = {
     "WAITING DELIVERY SCHEDULE",
     "DELIVERY SCHEDULED",
     "WAITING CARGO ATTENDANCE",
-    "WAITING PRE ALERT",
-    "WAITING GL",
     "WAITING CUSTOMS CLEARANCE",
 }
 # EXCLUIDOS propositalmente: WAITING ARRIVAL, WAITING IBAMA, e qualquer outro
@@ -495,9 +493,9 @@ HTML_BODY_TEMPLATE = """
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-balenciaga"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-balenciaga"></div></div>
   </div>
-  <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-balenciaga"></div>
-  <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div>
-  <div class="nfpod-wrap" id="nfpod-balenciaga"></div>
+  <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-balenciaga"></div> -->
+  <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
+  <!--<div class="nfpod-wrap" id="nfpod-balenciaga"></div> -->
 </div>
 <div class="page" id="page-bottega">
   <div id="sbar-bottega" class="sbar"></div>
@@ -516,9 +514,9 @@ HTML_BODY_TEMPLATE = """
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-bottega"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-bottega"></div></div>
   </div>
-  <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-bottega"></div>
-  <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div>
-  <div class="nfpod-wrap" id="nfpod-bottega"></div>
+  <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-bottega"></div> -->
+  <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
+  <!-- <div class="nfpod-wrap" id="nfpod-bottega"></div> -->
 </div>
 <div class="page" id="page-ysl">
   <div id="sbar-ysl" class="sbar"></div>
@@ -537,9 +535,9 @@ HTML_BODY_TEMPLATE = """
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-ysl"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-ysl"></div></div>
   </div>
-  <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-ysl"></div>
-  <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div>
-  <div class="nfpod-wrap" id="nfpod-ysl"></div>
+  <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-ysl"></div> -->
+  <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
+  <!-- <div class="nfpod-wrap" id="nfpod-ysl"></div> -->
 </div>
 <div class="page" id="page-gucci">
   <div id="sbar-gucci" class="sbar"></div>
@@ -558,9 +556,9 @@ HTML_BODY_TEMPLATE = """
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-gucci"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-gucci"></div></div>
   </div>
-  <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-gucci"></div>
-  <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div>
-  <div class="nfpod-wrap" id="nfpod-gucci"></div>
+  <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-gucci"></div> -->
+  <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
+  <!-- <div class="nfpod-wrap" id="nfpod-gucci"></div> -->
 </div>
 <div class="page" id="page-total">
   <div id="sbar-total" class="sbar"></div>
@@ -579,9 +577,9 @@ HTML_BODY_TEMPLATE = """
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-total"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-total"></div></div>
   </div>
-  <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-total"></div>
-  <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div>
-  <div class="nfpod-wrap" id="nfpod-total"></div>
+  <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-total"></div> -->
+  <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
+  <!-- <div class="nfpod-wrap" id="nfpod-total"></div> -->
 </div>
 
 <div class="moverlay" id="moverlay" onclick="if(event.target===this)closeMod()">
@@ -601,9 +599,9 @@ JS_AFTER_DATA_TEMPLATE = """
 
 // ── CONFIGURAÇÃO ─────────────────────────────────────────────
 const WEEK_RANGES={WEEK_RANGES_JSON};
-const STAGE_C={'Waiting GL':'#38bdf8','Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399', 'Delivery Scheduled':'#21c3b0', 'Waiting Pre Alert': '#a78bfa', 'Waiting Arr': '#60a5fa'};
-const STAGE_ORDER=['Waiting GL','Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD', 'Delivery Scheduled'];
-const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING DELIVERY SCHEDULE':'#34d399','DELIVERY SCHEDULED':'#21c3b0','WAITING PRE ALERT':'#a78bfa','WAITING GL':'#38bdf8','WAITING ARRIVAL':'#60a5fa','WAITING CARGO ATTENDANCE':'#fb923c','WAITING IBAMA':'#f87171','WAITING CUSTOMS CLEARANCE':'#fde047'};
+const STAGE_C={'Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399', 'Delivery Scheduled':'#21c3b0', 'Waiting Arr': '#60a5fa'};
+const STAGE_ORDER=['Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD', 'Delivery Scheduled'];
+const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING DELIVERY SCHEDULE':'#34d399','DELIVERY SCHEDULED':'#21c3b0','WAITING ARRIVAL':'#60a5fa','WAITING CARGO ATTENDANCE':'#fb923c','WAITING IBAMA':'#f87171','WAITING CUSTOMS CLEARANCE':'#fde047'};
 const NF_ST=new Set(['DELIVERED','DELIVERY SCHEDULED','WAITING CARGO ATTENDANCE','WAITING CUSTOMS CLEARANCE','WAITING DELIVERY SCHEDULE','WAITING NF']);
 const BRAND_C={'BALENCIAGA':'#93c5fd','BOTTEGA':'#60a5fa','GUCCI':'#1d4ed8','YSL':'#3b82f6'};
 const BRAND_KEY={'BALENCIAGA':'balenciaga','BOTTEGA':'bottega','GUCCI':'gucci','YSL':'ysl'};
@@ -621,14 +619,14 @@ let tModes={balenciaga:'all',bottega:'all',ysl:'all',gucci:'all',total:'all'};
 function isN(x){return x!=null&&typeof x==='number'&&x>=0&&x<=120;}
 function avN(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:null;}
 function getStage(s){
-  if(s==='WAITING GL') return 'Waiting GL';
+  //if(s==='WAITING GL') return 'Waiting GL';
   if(s==='WAITING CARGO ATTENDANCE') return 'Waiting Cargo Attendance';
   if(s==='WAITING ID REGISTER') return 'Waiting ID Reg';
   if(s==='WAITING CUSTOMS CLEARANCE') return 'Waiting CC';
   if(s==='WAITING NF') return 'Waiting NF';
   if(s==='WAITING DELIVERY SCHEDULE') return 'Waiting POD';
   if(s==='DELIVERY SCHEDULED') return 'Delivery Scheduled';
-  if(s==='WAITING PRE ALERT') return 'Waiting Pre Alert';
+  //if(s==='WAITING PRE ALERT') return 'Waiting Pre Alert';
   if(s==='WAITING ARRIVAL') return 'Waiting Arr';
 }
 function pc(p){

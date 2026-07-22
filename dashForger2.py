@@ -40,12 +40,9 @@ DATA_CORTE   = datetime.datetime(2026, 4, 1)   # Invoice Receipt >= esta data
 STATUS_VALIDOS = {
     "WAITING ID REGISTER",
     "WAITING NF",
-    "WAITING ARRIVAL",
     "WAITING DELIVERY SCHEDULE",
     "DELIVERY SCHEDULED",
     "WAITING CARGO ATTENDANCE",
-    "WAITING PRE ALERT",
-    "WAITING GL",
     "WAITING CUSTOMS CLEARANCE",
 }
 # EXCLUIDOS propositalmente: WAITING ARRIVAL, WAITING IBAMA, e qualquer outro
@@ -772,7 +769,7 @@ function drawSbar(brand){
   const d=DATA[brand];const el=document.getElementById('sbar-'+brand);if(!el||!d)return;
   const hasD=d.del_list&&d.del_list.length>0;
   const totD=hasD?d.del_list.reduce((s,x)=>s+x.invoices,0):0;
-  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>ON TIME &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
+  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>ON GOING &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
   if(hasD){
     h+=`<div class="sdiv"></div><div class="spill delayed"><span class="sdot" style="background:#ef4444"></span>DELAYED &nbsp;<strong>${totD}</strong></div>
     <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>

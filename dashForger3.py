@@ -36,11 +36,10 @@ import openpyxl
 ABA_PLANILHA = "Base Unificada"   # nome da aba a ser lida (cai para a aba ativa se nao existir)
 DATA_CORTE   = datetime.datetime(2026, 4, 1)   # Invoice Receipt >= esta data
 
-# Status considerados validos (exatamente estes 9)
+# Status considerados validos (exatamente estes 6)
 STATUS_VALIDOS = {
     "WAITING ID REGISTER",
     "WAITING NF",
-    "WAITING ARRIVAL",
     "WAITING DELIVERY SCHEDULE",
     "DELIVERY SCHEDULED",
     "WAITING CARGO ATTENDANCE",
@@ -50,6 +49,20 @@ STATUS_VALIDOS = {
 
 # Status usado para a leitura adicional de processos ja entregues
 STATUS_DELIVERED = {"DELIVERED"}
+
+
+# Status considerados validos para a etapa 'STATUS' no Dashboard (exatamente estes 9)
+STATUS_VALIDOS_STS = {
+    "WAITING ID REGISTER",
+    "WAITING NF",
+    "WAITING DELIVERY SCHEDULE",
+    "DELIVERY SCHEDULED",
+    "WAITING CARGO ATTENDANCE",
+    "WAITING CUSTOMS CLEARANCE",
+    "WAITING ARRIVAL",
+    "WAITING GL",
+    "WAITING PRE ALERT",
+}
 
 # Mapeamento de colunas da planilha (0-based)
 # A=0 SHIPMENT  B=1 INVOICE  C=2 BOXES  D=3 ITEMS  E=4 STATUS
@@ -491,7 +504,7 @@ HTML_BODY_TEMPLATE = """
   <div class="grid" style="margin-top:13px">
     <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-balenciaga"></div></div>
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-balenciaga"></div></div>
-    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-balenciaga"></div></div>
+    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-balenciaga"></div></div>
   </div>
   <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-balenciaga"></div> -->
   <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
@@ -512,7 +525,7 @@ HTML_BODY_TEMPLATE = """
   <div class="grid" style="margin-top:13px">
     <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-bottega"></div></div>
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-bottega"></div></div>
-    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-bottega"></div></div>
+    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-bottega"></div></div>
   </div>
   <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-bottega"></div> -->
   <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
@@ -533,7 +546,7 @@ HTML_BODY_TEMPLATE = """
   <div class="grid" style="margin-top:13px">
     <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-ysl"></div></div>
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-ysl"></div></div>
-    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-ysl"></div></div>
+    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-ysl"></div></div>
   </div>
   <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-ysl"></div> -->
   <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
@@ -554,7 +567,7 @@ HTML_BODY_TEMPLATE = """
   <div class="grid" style="margin-top:13px">
     <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-gucci"></div></div>
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-gucci"></div></div>
-    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-gucci"></div></div>
+    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-gucci"></div></div>
   </div>
   <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-gucci"></div> -->
   <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
@@ -575,7 +588,7 @@ HTML_BODY_TEMPLATE = """
   <div class="grid" style="margin-top:13px">
     <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-total"></div></div>
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-total"></div></div>
-    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>Volume by Month</h2><div class="ch h200" id="vol-total"></div></div>
+    <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-total"></div></div>
   </div>
   <!-- <div class="sec">SLA Compliance</div><div class="sla-wrap" id="sla-total"></div> -->
   <!-- <div class="sec">NF → POD by State &nbsp;<span style="color:#1e3050;font-size:8px;letter-spacing:1px">(SAO 2d · RIO 3d · Others 5d)</span></div> -->
@@ -599,7 +612,7 @@ JS_AFTER_DATA_TEMPLATE = """
 
 // ── CONFIGURAÇÃO ─────────────────────────────────────────────
 const WEEK_RANGES={WEEK_RANGES_JSON};
-const STAGE_C={'Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399', 'Delivery Scheduled':'#21c3b0', 'Waiting Arr': '#60a5fa'};
+const STAGE_C={'Waiting Cargo Attendance':'#fb923c','Waiting ID Reg':'#fbbf24','Waiting CC':'#fde047','Waiting NF':'#f472b6','Waiting POD':'#34d399', 'Delivery Scheduled':'#21c3b0'};
 const STAGE_ORDER=['Waiting Cargo Attendance','Waiting ID Reg','Waiting CC','Waiting NF','Waiting POD', 'Delivery Scheduled'];
 const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING DELIVERY SCHEDULE':'#34d399','DELIVERY SCHEDULED':'#21c3b0','WAITING ARRIVAL':'#60a5fa','WAITING CARGO ATTENDANCE':'#fb923c','WAITING IBAMA':'#f87171','WAITING CUSTOMS CLEARANCE':'#fde047'};
 const NF_ST=new Set(['DELIVERED','DELIVERY SCHEDULED','WAITING CARGO ATTENDANCE','WAITING CUSTOMS CLEARANCE','WAITING DELIVERY SCHEDULE','WAITING NF']);
@@ -613,21 +626,22 @@ const MLABELS={MLABELS_JSON};
 let fMode='eta';
 let fFrom=null, fTo=null;
 let DATA={};
+let DATA_ALL_STS={};
 let tModes={balenciaga:'all',bottega:'all',ysl:'all',gucci:'all',total:'all'};
 
 // ── HELPERS ──────────────────────────────────────────────────
 function isN(x){return x!=null&&typeof x==='number'&&x>=0&&x<=120;}
 function avN(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:null;}
 function getStage(s){
-  //if(s==='WAITING GL') return 'Waiting GL';
   if(s==='WAITING CARGO ATTENDANCE') return 'Waiting Cargo Attendance';
   if(s==='WAITING ID REGISTER') return 'Waiting ID Reg';
   if(s==='WAITING CUSTOMS CLEARANCE') return 'Waiting CC';
   if(s==='WAITING NF') return 'Waiting NF';
   if(s==='WAITING DELIVERY SCHEDULE') return 'Waiting POD';
   if(s==='DELIVERY SCHEDULED') return 'Delivery Scheduled';
+  //if(s==='WAITING GL') return 'Waiting GL';
   //if(s==='WAITING PRE ALERT') return 'Waiting Pre Alert';
-  if(s==='WAITING ARRIVAL') return 'Waiting Arr';
+  //if(s==='WAITING ARRIVAL') return 'Waiting Arr';
 }
 function pc(p){
   if(p>=90)return'#22c55e';if(p>=80)return'#93c5fd';if(p>=70)return'#60a5fa';
@@ -728,6 +742,23 @@ function getRows(brand,src){
   }
   return rs;
 }
+
+// Função idêntica à getRows(), porém trabalha com a costante ALL_STS_ROWS (que inclui os status 'WAITING ARRIVAL', 'WAITING GL' e 'WAITING PRE ALERT')
+function getRowsSTS(brand,src){
+  src=src||ALL_STS_ROWS;
+  let rs=src.filter(r=>r[0]===brand);
+  if(fFrom||fTo){
+    const fi=fMode==='eta'?9:8;
+    rs=rs.filter(r=>{
+      const d=r[fi];if(!d)return false;
+      if(fFrom&&d<fFrom)return false;
+      if(fTo&&d>fTo)return false;
+      return true;
+    });
+  }
+  return rs;
+}
+
 // Agrega os 4 numeros de "ja entregue" (shipments/invoices/boxes/items)
 // a partir de um conjunto de linhas DELIVERED ja filtradas.
 function delivStats(rs){
@@ -741,11 +772,15 @@ function delivStats(rs){
 function recompute(){
   ['BALENCIAGA','BOTTEGA','GUCCI','YSL'].forEach(b=>{
     const key=BRAND_KEY[b];
+    DATA_ALL_STS[key]=compute(getRows(b, ALL_STS_ROWS));
     DATA[key]=compute(getRows(b))||{color:BRAND_C[b],transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
     DATA[key].delivered=delivStats(getRows(b,DELIVERED_ROWS));
+    console.log("DATA KEY ACIMA");
   });
   const totRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b));
   DATA.total=compute(totRows)||{color:'#22d3ee',transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
+  const totStsRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b, ALL_STS_ROWS));
+  DATA_ALL_STS.total=compute(totStsRows);
   if(DATA.total) DATA.total.color='#22d3ee';
   const totDeliveredRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b,DELIVERED_ROWS));
   DATA.total.delivered=delivStats(totDeliveredRows);
@@ -798,13 +833,13 @@ function drawSbar(brand){
   const d=DATA[brand];const el=document.getElementById('sbar-'+brand);if(!el||!d)return;
   const hasD=d.del_list&&d.del_list.length>0;
   const totD=hasD?d.del_list.reduce((s,x)=>s+x.invoices,0):0;
-  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>ON TIME &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
+  let h=`<div class="spill transit"><span class="sdot" style="background:#3b82f6"></span>INVOICES ON GOING &nbsp;<strong>${d.transit.toLocaleString()}</strong></div>`;
   if(hasD){
-    h+=`<div class="sdiv"></div><div class="spill delayed"><span class="sdot" style="background:#ef4444"></span>DELAYED &nbsp;<strong>${totD}</strong></div>
+    h+=`<div class="sdiv"></div><div class="spill delayed"><span class="sdot" style="background:#ef4444"></span>INVOICES DELAYED &nbsp;<strong>${totD}</strong></div>
     <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>
     <button class="dbtn" onclick="openMod('${brand}')"><span class="ddot"></span>View Delayed Shipments</button>`;
   } else {
-    h+=`<div class="sdiv"></div><div class="spill ok"><span class="sdot" style="background:#22c55e"></span>NO DELAYED PROCESSES</div>
+    h+=`<div class="sdiv"></div><div class="spill ok"><span class="sdot" style="background:#22c55e"></span>NO DELAYED INVOICES</div>
     <div class="sdiv"></div><span style="font-size:9.5px;color:#3d5270">Total: <strong style="color:#dbeafe">${d.inv.toLocaleString()}</strong></span>`;
   }
   el.innerHTML=h;
@@ -920,7 +955,6 @@ function drawBlist(id,items){
   if(!items||!items.length){el.innerHTML='<div style="color:#263545;font-size:10px;padding:8px 0">No data</div>';return;}
   const max=Math.max(...items.map(s=>s.v),1);
   el.innerHTML=items.map(s=>`<div class="brow"><div class="bnm" title="${s.n}">${s.n}</div><div class="bbg"><div class="bfill" style="width:${s.v/max*100}%;background:${s.c}"></div></div><div class="bval">${s.v}</div></div>`).join('');
-  console.log(items);
 }
 
 // ── VOLUME ───────────────────────────────────────────────────
@@ -1003,7 +1037,6 @@ function openMod(brand){
     const breached=ship.milestones.filter(m=>m.val!=null&&m.val>m.sla);
     const maxV=Math.max(...ship.milestones.filter(m=>m.val!=null).map(m=>Math.max(m.val,m.sla)),1)*1.15;
     const msRows=ship.milestones.map(m=>{
-      console.log(ship.milestones);
       if(m.val==null)return`<div class="msrow"><div class="mslbl">${m.key}</div><div class="mstrack" style="background:#060c18"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:8.5px;color:#2a3f5f;font-style:italic">No data</span></div><div class="msval" style="color:#2a3f5f">—</div><div class="msslal">≤${m.sla}d</div></div>`;
       const fp=Math.min(m.val/maxV*100,100);const sp=Math.min(m.sla/maxV*100,100);
       return`<div class="msrow"><div class="mslbl">${m.key}</div><div class="mstrack"><div class="msfill" style="width:${fp}%;background:${m.color}">${m.val>=4?m.val+'d':''}</div><div class="msline" style="left:${sp}%"></div></div><div class="msval" style="color:${m.color}">${m.val}d</div><div class="msslal">≤${m.sla}d</div></div>`;
@@ -1032,12 +1065,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMod();});
 function renderAll(){
   ['balenciaga','bottega','ysl','gucci','total'].forEach(brand=>{
     const d=DATA[brand];if(!d)return;
+    const d_sts = DATA_ALL_STS[brand]; if(!d_sts)return;
     drawSbar(brand);drawKpis(brand);drawPipe(brand);
     drawTrend(brand);drawFunnel(brand);
     drawBlist('stage-'+brand,d.stages);
-    console.log(d.statuses);
-    console.log('Acima statuses');
-    drawBlist('status-'+brand,d.statuses);
+    drawBlist('status-'+brand,d_sts.statuses);
+    //drawBlist('status-'+brand,d.statuses);
     drawVol(brand);drawSla(brand);drawNfPod(brand);
   });
 }
@@ -1047,10 +1080,11 @@ renderAll();
 """
 
 
-def montar_html(rows, delivered_rows, timestamp_str):
+def montar_html(rows, delivered_rows, status_step_rows, timestamp_str):
     """Monta o arquivo HTML final injetando os dados no template."""
     rows_json = json.dumps(rows, separators=(",", ":"), ensure_ascii=False)
     delivered_rows_json = json.dumps(delivered_rows, separators=(",", ":"), ensure_ascii=False)
+    status_step_rows_json = json.dumps(status_step_rows, separators=(",", ":"), ensure_ascii=False)
 
     # ── intervalo real de datas presente nos dados ──────────────────────
     datas = computar_datas(rows)
@@ -1101,6 +1135,9 @@ const ALL_ROWS={rows_json};
 // Linhas com status == DELIVERED (mesmo formato de ALL_ROWS), usadas
 // apenas para os KPIs adicionais de "ja entregue" no Overview:
 const DELIVERED_ROWS={delivered_rows_json};
+// Linhas com os outros status 'WAITING ARRIVAL', 'WAITING GL' e 'WAITING PRE ALERT'  (mesmo formato de ALL_ROWS),
+// usadas na etapa 'STATUS':
+const ALL_STS_ROWS={status_step_rows_json};
 // ── FIM DOS DADOS ────────────────────────────────────────────"""
 
     html = f"""<!DOCTYPE html>
@@ -1153,10 +1190,13 @@ def main():
     imprimir_resumo(rows)
 
     delivered_rows = extrair_rows(caminho, status_filtro=STATUS_DELIVERED, silencioso=True)
+
+    status_step_rows = extrair_rows(caminho, status_filtro=STATUS_VALIDOS_STS, silencioso=True)
+
     print(f"\n  Linhas DELIVERED encontradas: {len(delivered_rows)}")
 
     timestamp_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%Mh")
-    html = montar_html(rows, delivered_rows, timestamp_str)
+    html = montar_html(rows, delivered_rows, status_step_rows, timestamp_str)
 
     out_path = Path(args.out)
     out_path.write_text(html, encoding="utf-8")

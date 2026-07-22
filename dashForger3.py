@@ -73,8 +73,8 @@ STATUS_VALIDOS_STS = {
 COL = {
     "shipment": 0, "invoice": 1, "boxes": 2, "items": 3, "status": 4,
     "loc": 5, "channel": 6, "status_lead": 7, "inv_receipt": 8, "eta": 10,
-    "lt_ig": 16, "lt_ai": 18, "lt_ic": 19, "lt_cn": 21, "lt_np": 22,
-    "brand": 23
+    "delivery_date": 15, "lt_ig": 16, "lt_ai": 18, "lt_ic": 19, "lt_cn": 21,
+    "lt_np": 22, "brand": 23
 }
 
 BRANDS_ESPERADAS = ["BALENCIAGA", "BOTTEGA", "YSL", "GUCCI"]
@@ -173,6 +173,7 @@ def extrair_rows(caminho_planilha, status_filtro=None, silencioso=False):
             continue
 
         eta = parse_date(row[COL["eta"]]) if len(row) > COL["eta"] else None
+        delivery_date = parse_date(row[COL["delivery_date"]]) if len(row) > COL["delivery_date"] else None
         ship = clean_str(row[COL["shipment"]])
         inv = clean_str(row[COL["invoice"]])
         boxes = int(row[COL["boxes"]]) if isinstance(row[COL["boxes"]], (int, float)) else 0
@@ -192,6 +193,7 @@ def extrair_rows(caminho_planilha, status_filtro=None, silencioso=False):
             val_lt(row[COL["lt_cn"]]),
             val_lt(row[COL["lt_np"]]),
             inv,
+            delivery_date.strftime("%Y-%m-%d") if delivery_date else None,
         ])
 
     if not silencioso:
@@ -242,6 +244,8 @@ def computar_datas(rows):
             datas.append(datetime.datetime.strptime(r[8], "%Y-%m-%d"))
         if r[9]:
             datas.append(datetime.datetime.strptime(r[9], "%Y-%m-%d"))
+        if r[16]:
+            datas.append(datetime.datetime.strptime(r[16], "%Y-%m-%d"))
     return datas
 
 
@@ -459,27 +463,6 @@ HTML_BODY_TEMPLATE = """
   <div class="hright">Data range<br><strong>{DATA_RANGE_LABEL}</strong><br><span style="margin-top:3px;display:block">Last update &nbsp;<strong>{LAST_UPDATE_LABEL}</strong></span></div>
 </div>
 
-<div class="fbar">
-  <div class="flabel">Filter by</div>
-  <div class="fmode">
-    <button class="fmbtn active" id="mode-eta" onclick="setFMode('eta')">ETA Date</button>
-    <button class="fmbtn" id="mode-receipt" onclick="setFMode('receipt')">Invoice Receipt</button>
-  </div>
-  <div class="finputs">
-    <label>From</label><input type="date" id="f-from" onchange="applyFilter()"/>
-    <label>To</label><input type="date" id="f-to" onchange="applyFilter()"/>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <label style="font-size:9px;color:#4a6080;font-weight:600">Week</label>
-    <select class="wsel" id="f-week" onchange="applyWeek()">
-      <option value="">— All weeks —</option>
-      {WEEK_OPTIONS_HTML}
-    </select>
-  </div>
-  <button class="fclear" onclick="clearFilter()">↺ Clear</button>
-  <div class="fcount" id="fcount"></div>
-</div>
-
 <div class="tabs">
   <div class="tab active" data-b="balenciaga" onclick="setTab('balenciaga',this)"><span class="tdot" style="background:#93c5fd"></span>Balenciaga</div>
   <div class="tab" data-b="bottega" onclick="setTab('bottega',this)"><span class="tdot" style="background:#60a5fa"></span>Bottega Veneta</div>
@@ -502,7 +485,7 @@ HTML_BODY_TEMPLATE = """
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-balenciaga"></div></div>
   </div>
   <div class="grid" style="margin-top:13px">
-    <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-balenciaga"></div></div>
+    <!-- <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-balenciaga"></div></div> -->
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-balenciaga"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-balenciaga"></div></div>
   </div>
@@ -732,7 +715,7 @@ function getRows(brand,src){
   src=src||ALL_ROWS;
   let rs=src.filter(r=>r[0]===brand);
   if(fFrom||fTo){
-    const fi=fMode==='eta'?9:8;
+    const fi=fMode==='eta'?9:(fMode==='delivery'?16:8);
     rs=rs.filter(r=>{
       const d=r[fi];if(!d)return false;
       if(fFrom&&d<fFrom)return false;
@@ -748,7 +731,7 @@ function getRowsSTS(brand,src){
   src=src||ALL_STS_ROWS;
   let rs=src.filter(r=>r[0]===brand);
   if(fFrom||fTo){
-    const fi=fMode==='eta'?9:8;
+    const fi=fMode==='eta'?9:(fMode==='delivery'?16:8);
     rs=rs.filter(r=>{
       const d=r[fi];if(!d)return false;
       if(fFrom&&d<fFrom)return false;
@@ -796,7 +779,11 @@ function applyWeek(){
   const w=document.getElementById('f-week').value;
   if(!w){clearFilter();return;}
   const [fr,to]=WEEK_RANGES[w]||[];
-  if(fr){document.getElementById('f-from').value=fr;document.getElementById('f-to').value=to;}
+  if(fr){
+    fMode='delivery';
+    document.getElementById('f-from').value=fr;
+    document.getElementById('f-to').value=to;
+  }
   applyFilter();
 }
 function applyFilter(){
@@ -1130,7 +1117,7 @@ def montar_html(rows, delivered_rows, status_step_rows, timestamp_str):
 // Campos por linha (16 indices):
 // [0]brand [1]ship [2]boxes [3]items [4]status [5]loc [6]channel
 // [7]status_lead [8]inv_receipt(YYYY-MM-DD) [9]eta(YYYY-MM-DD|null)
-// [10]lt_ig [11]lt_ai [12]lt_ic [13]lt_cn [14]lt_np [15]invoice
+// [10]lt_ig [11]lt_ai [12]lt_ic [13]lt_cn [14]lt_np [15]invoice [16] delivery_date
 const ALL_ROWS={rows_json};
 // Linhas com status == DELIVERED (mesmo formato de ALL_ROWS), usadas
 // apenas para os KPIs adicionais de "ja entregue" no Overview:

@@ -188,11 +188,12 @@ def extrair_rows(caminho_planilha, status_filtro=None, silencioso=False):
             brand, ship, boxes, items, status, loc, channel, status_lead,
             inv_rec.strftime("%Y-%m-%d"),
             eta.strftime("%Y-%m-%d") if eta else None,
-            val_lt(row[COL["lt_ig"]]),
-            val_lt(row[COL["lt_ai"]]),
-            val_lt(row[COL["lt_ic"]]),
-            val_lt(row[COL["lt_cn"]]),
-            val_lt(row[COL["lt_np"]]),
+            val_lt(row[COL["lt_ig"]]), #10
+            val_lt(row[COL["lt_ga"]]), #11
+            val_lt(row[COL["lt_ai"]]), #12
+            val_lt(row[COL["lt_ic"]]), #13
+            val_lt(row[COL["lt_cn"]]), #14
+            val_lt(row[COL["lt_np"]]), #15
             inv,
             delivery_date.strftime("%Y-%m-%d") if delivery_date else None,
         ])
@@ -243,10 +244,6 @@ def computar_datas(rows):
     for r in rows:
         if r[8]:
             datas.append(datetime.datetime.strptime(r[8], "%Y-%m-%d"))
-        if r[9]:
-            datas.append(datetime.datetime.strptime(r[9], "%Y-%m-%d"))
-        if r[16]:
-            datas.append(datetime.datetime.strptime(r[16], "%Y-%m-%d"))
     return datas
 
 
@@ -481,7 +478,7 @@ HTML_BODY_TEMPLATE = """
   <div class="pwrap" id="pipe-balenciaga"></div>
   <div class="grid" style="margin-top:13px">
     <div class="card s8"><h2><span class="cdot" style="background:#93c5fd"></span>Monthly Avg Lead Time — days per Milestone</h2>
-      <div class="pills" id="pills-balenciaga"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span></div>
+      <div class="pills" id="pills-balenciaga"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_gl_arr">GL→ARR</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_id_cc_ry">ID→CC</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
       <div class="ch h280" id="c-balenciaga-trend"></div><div class="legend" id="lg-balenciaga"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-balenciaga"></div></div>
   </div>
@@ -502,7 +499,7 @@ HTML_BODY_TEMPLATE = """
   <div class="pwrap" id="pipe-bottega"></div>
   <div class="grid" style="margin-top:13px">
     <div class="card s8"><h2><span class="cdot" style="background:#60a5fa"></span>Monthly Avg Lead Time — days per Milestone</h2>
-      <div class="pills" id="pills-bottega"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
+      <div class="pills" id="pills-bottega"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_gl_arr">GL→ARR</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_id_cc_ry">ID→CC</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
       <div class="ch h280" id="c-bottega-trend"></div><div class="legend" id="lg-bottega"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-bottega"></div></div>
   </div>
@@ -523,7 +520,7 @@ HTML_BODY_TEMPLATE = """
   <div class="pwrap" id="pipe-ysl"></div>
   <div class="grid" style="margin-top:13px">
     <div class="card s8"><h2><span class="cdot" style="background:#3b82f6"></span>Monthly Avg Lead Time — days per Milestone</h2>
-      <div class="pills" id="pills-ysl"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
+      <div class="pills" id="pills-ysl"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_gl_arr">GL→ARR</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_id_cc_ry">ID→CC</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
       <div class="ch h280" id="c-ysl-trend"></div><div class="legend" id="lg-ysl"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-ysl"></div></div>
   </div>
@@ -544,7 +541,7 @@ HTML_BODY_TEMPLATE = """
   <div class="pwrap" id="pipe-gucci"></div>
   <div class="grid" style="margin-top:13px">
     <div class="card s8"><h2><span class="cdot" style="background:#1d4ed8"></span>Monthly Avg Lead Time — days per Milestone</h2>
-      <div class="pills" id="pills-gucci"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
+      <div class="pills" id="pills-gucci"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_gl_arr">GL→ARR</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_id_cc_ry">ID→CC</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
       <div class="ch h280" id="c-gucci-trend"></div><div class="legend" id="lg-gucci"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-gucci"></div></div>
   </div>
@@ -565,7 +562,7 @@ HTML_BODY_TEMPLATE = """
   <div class="pwrap" id="pipe-total"></div>
   <div class="grid" style="margin-top:13px">
     <div class="card s8"><h2><span class="cdot" style="background:#22d3ee"></span>Monthly Avg Lead Time — days per Milestone</h2>
-      <div class="pills" id="pills-total"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
+      <div class="pills" id="pills-total"><span class="pill active" data-mode="all">All</span><span class="pill" data-mode="lt_inv_gl">Invoice→GL</span><span class="pill" data-mode="lt_gl_arr">GL→ARR</span><span class="pill" data-mode="lt_arr_id">ARR→ID Reg</span><span class="pill" data-mode="lt_id_cc_ry">ID→CC</span><span class="pill" data-mode="lt_cc_nf">CC→NF</span><span class="pill" data-mode="lt_nf_pod">NF→POD</span></div>
       <div class="ch h280" id="c-total-trend"></div><div class="legend" id="lg-total"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-total"></div></div>
   </div>
@@ -602,7 +599,7 @@ const STATUS_C={'WAITING ID REGISTER':'#fbbf24','WAITING NF':'#f472b6','WAITING 
 const NF_ST=new Set(['DELIVERED','DELIVERY SCHEDULED','WAITING CARGO ATTENDANCE','WAITING CUSTOMS CLEARANCE','WAITING DELIVERY SCHEDULE','WAITING NF']);
 const BRAND_C={'BALENCIAGA':'#93c5fd','BOTTEGA':'#60a5fa','GUCCI':'#1d4ed8','YSL':'#3b82f6'};
 const BRAND_KEY={'BALENCIAGA':'balenciaga','BOTTEGA':'bottega','GUCCI':'gucci','YSL':'ysl'};
-const META={lt_inv_gl:{label:'Invoice→GL',color:'#38bdf8',sla:7},lt_arr_id:{label:'ARR→ID Reg',color:'#f472b6',sla:2},lt_id_cc_ry:{label:'ID→CC (R/Y)',color:'#fbbf24',sla:1},lt_cc_nf:{label:'CC→NF',color:'#34d399',sla:2},lt_nf_pod:{label:'NF→POD',color:'#fb923c',sla:3}};
+const META={lt_inv_gl:{label:'Invoice→GL',color:'#38bdf8',sla:7},lt_gl_arr:{label:'GL→ARR',color:'#38bdf8',sla:3},lt_arr_id:{label:'ARR→ID Reg',color:'#f472b6',sla:2},lt_id_cc_ry:{label:'ID→CC (R/Y)',color:'#fbbf24',sla:1},lt_cc_nf:{label:'CC→NF',color:'#34d399',sla:2},lt_nf_pod:{label:'NF→POD',color:'#fb923c',sla:3}};
 const MONTHS={MONTHS_JSON};
 const MLABELS={MLABELS_JSON};
 
@@ -665,7 +662,7 @@ function compute(rs){
   const statuses=Object.entries(scM).sort((a,b)=>b[1]-a[1]).slice(0,7).map(([n,v])=>({n,v,c:STATUS_C[n]||'#3b82f6'}));
   // avgs
   const af=(fi,ry=false)=>avN(rs.filter(r=>isN(r[fi])&&(!ry||['RED','YELLOW'].includes(r[6]))).map(r=>r[fi]));
-  const avgs={lt_inv_gl:af(10),lt_arr_id:af(11),lt_id_cc_ry:af(12,true),lt_cc_nf:af(13),lt_nf_pod:af(14)};
+  const avgs={lt_inv_gl:af(10), lt_gL_arr:af(11), lt_arr_id:af(12),lt_id_cc_ry:af(13,true),lt_cc_nf:af(14),lt_nf_pod:af(15)};
   // vol
   const vol={};rs.forEach(r=>{if(r[8]){const ym=r[8].slice(0,7);vol[ym]=(vol[ym]||0)+1;}});
   // trend
@@ -673,7 +670,7 @@ function compute(rs){
   rs.forEach(r=>{
     if(!r[8])return;const ym=r[8].slice(0,7);
     if(!tmap[ym])tmap[ym]={};
-    [[10,'lt_inv_gl'],[11,'lt_arr_id'],[13,'lt_cc_nf'],[14,'lt_nf_pod']].forEach(([fi,k])=>{
+    [[10,'lt_inv_gl'],[11,'lt_gL_arr'],[12,'lt_arr_id'],[13,'lt_id_cc_ry'],[14,'lt_cc_nf'],[15,'lt_nf_pod']].forEach(([fi,k])=>{
       if(isN(r[fi])){if(!tmap[ym][k])tmap[ym][k]=[];tmap[ym][k].push(r[fi]);}
     });
   });
@@ -684,7 +681,7 @@ function compute(rs){
     const el=ry?rs.filter(r=>['RED','YELLOW'].includes(r[6])):rs;
     return{ok:el.filter(r=>isN(r[fi])&&r[fi]<=sla).length,br:el.filter(r=>isN(r[fi])&&r[fi]>sla).length,na:el.filter(r=>!isN(r[fi])).length};
   };
-  const sla={lt_inv_gl:sc2(10,7),lt_arr_id:sc2(11,2),lt_id_cc_ry:sc2(12,1,true),lt_cc_nf:sc2(13,2)};
+  const sla={lt_inv_gl:sc2(10,7),lt_gl_arr:sc2(11,3),lt_arr_id:sc2(12,2),lt_id_cc_ry:sc2(13,1,true),lt_cc_nf:sc2(14,2),lt_nf_pod:sc2(15,2)};
   // NF→POD
   const nfpod={SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}};
   rs.forEach(r=>{
@@ -740,12 +737,12 @@ function recompute(){
   ['BALENCIAGA','BOTTEGA','GUCCI','YSL'].forEach(b=>{
     const key=BRAND_KEY[b];
     DATA_ALL_STS[key]=compute(getRows(b, ALL_STS_ROWS));
-    DATA[key]=compute(getRows(b))||{color:BRAND_C[b],transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
+    DATA[key]=compute(getRows(b))||{color:BRAND_C[b],transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_gl_arr:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0},lt_nf_pod:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
     DATA[key].delivered=delivStats(getRows(b,DELIVERED_ROWS));
     console.log("DATA KEY ACIMA");
   });
   const totRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b));
-  DATA.total=compute(totRows)||{color:'#22d3ee',transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
+  DATA.total=compute(totRows)||{color:'#22d3ee',transit:0,delayed:0,ships:0,inv:0,boxes:0,items:0,pipeline:[],stages:[],statuses:[],avgs:{},vol:{},trend:{},sla:{lt_inv_gl:{ok:0,br:0,na:0},lt_gl_arr:{ok:0,br:0,na:0},lt_arr_id:{ok:0,br:0,na:0},lt_id_cc_ry:{ok:0,br:0,na:0},lt_cc_nf:{ok:0,br:0,na:0},lt_nf_pod:{ok:0,br:0,na:0}},nfpod:{SAO:{ok:0,br:0,sla:2},RIO:{ok:0,br:0,sla:3},OTHER:{ok:0,br:0,sla:5}},del_list:[]};
   const totStsRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b, ALL_STS_ROWS));
   DATA_ALL_STS.total=compute(totStsRows);
   if(DATA.total) DATA.total.color='#22d3ee';
@@ -824,7 +821,7 @@ function drawTrend(brand){
   const mode=tModes[brand];
   const w=el.clientWidth||700,h=el.clientHeight||260;
   const m={t:28,r:20,b:40,l:46};
-  const base=['lt_inv_gl','lt_arr_id','lt_cc_nf'];
+  const base=['lt_inv_gl','lt_gl_arr','lt_arr_id','lt_id_cc_ry','lt_cc_nf','lt_nf_pod'];
   const all=d.avgs&&d.avgs.lt_nf_pod!=null?[...base,'lt_nf_pod']:base;
   const keys=mode==='all'?all:[mode];
   let maxV=0;
@@ -877,7 +874,7 @@ function drawTrend(brand){
 function drawFunnel(brand){
   const d=DATA[brand];const el=document.getElementById('f-'+brand);if(!el||!d)return;
   const a=d.avgs||{};
-  const items=[{l:'Invoice→GL',v:a.lt_inv_gl,c:'#93c5fd'},{l:'ARR→ID Reg',v:a.lt_arr_id,c:'#818cf8'},{l:'ID→CC (R/Y)',v:a.lt_id_cc_ry,c:'#f59e0b'},{l:'CC→NF',v:a.lt_cc_nf,c:'#f472b6'},{l:'NF→POD',v:a.lt_nf_pod,c:'#22c55e'}].filter(x=>x.v!=null);
+  const items=[{l:'Invoice→GL',v:a.lt_inv_gl,c:'#93c5fd'},{l:'GL→ARR',v:a.lt_gl_arr,c:'#93c5fd'},{l:'ARR→ID Reg',v:a.lt_arr_id,c:'#818cf8'},{l:'ID→CC (R/Y)',v:a.lt_id_cc_ry,c:'#f59e0b'},{l:'CC→NF',v:a.lt_cc_nf,c:'#f472b6'},{l:'NF→POD',v:a.lt_nf_pod,c:'#22c55e'}].filter(x=>x.v!=null);
   if(!items.length){el.innerHTML='<div style="color:#2a3f5f;font-size:10px;padding:8px">No data</div>';return;}
   const max=Math.max(...items.map(i=>i.v),1);
   el.innerHTML=items.map(it=>`<div class="frow"><div class="fflbl">${it.l}</div><div class="ffbg"><div class="ffbar" style="width:${it.v/max*100}%;background:${it.c}">${it.v}d</div></div><div class="ffavg">${it.v}d</div></div>`).join('')+`<div style="margin-top:9px;font-size:8.5px;color:#263545;text-align:center;letter-spacing:1px;text-transform:uppercase">Avg — filtered processes</div>`;
@@ -918,7 +915,7 @@ function drawVol(brand){
 function drawSla(brand){
   const d=DATA[brand];const el=document.getElementById('sla-'+brand);if(!el||!d)return;
   const sla=d.sla||{};
-  const keys=['lt_inv_gl','lt_arr_id','lt_id_cc_ry','lt_cc_nf'];
+  const keys=['lt_inv_gl','lt_gl_arr','lt_arr_id','lt_id_cc_ry','lt_cc_nf','lt_nf_pod'];
   el.innerHTML=keys.map(k=>{
     const s=sla[k]||{ok:0,br:0,na:0};const meas=s.ok+s.br;
     const pct=meas>0?Math.round(s.ok/meas*100):0;const p=pc(pct);
@@ -1020,6 +1017,7 @@ def montar_html(rows, delivered_rows, status_step_rows, timestamp_str):
     delivered_rows_json = json.dumps(delivered_rows, separators=(",", ":"), ensure_ascii=False)
     status_step_rows_json = json.dumps(status_step_rows, separators=(",", ":"), ensure_ascii=False)
 
+    
     # ── intervalo real de datas presente nos dados ──────────────────────
     datas = computar_datas(rows)
     months, mlabels = computar_months(datas)
@@ -1045,6 +1043,7 @@ def montar_html(rows, delivered_rows, status_step_rows, timestamp_str):
     mlabels_json = json.dumps(mlabels, separators=(",", ":"), ensure_ascii=False)
     week_ranges_json = json.dumps(week_ranges, separators=(",", ":"))
 
+
     body = (
         HTML_BODY_TEMPLATE
         .replace("{DATA_RANGE_LABEL}", data_range_label)
@@ -1064,7 +1063,7 @@ def montar_html(rows, delivered_rows, status_step_rows, timestamp_str):
 // Campos por linha (16 indices):
 // [0]brand [1]ship [2]boxes [3]items [4]status [5]loc [6]channel
 // [7]status_lead [8]inv_receipt(YYYY-MM-DD) [9]eta(YYYY-MM-DD|null)
-// [10]lt_ig [11]lt_ai [12]lt_ic [13]lt_cn [14]lt_np [15]invoice [16] delivery_date
+// [10]lt_ig [11]lt_ga [12]lt_ai [13]lt_ic [14]lt_cn [15]lt_np [16]invoice [17] delivery_date
 const ALL_ROWS={rows_json};
 // Linhas com status == DELIVERED (mesmo formato de ALL_ROWS), usadas
 // apenas para os KPIs adicionais de "ja entregue" no Overview:

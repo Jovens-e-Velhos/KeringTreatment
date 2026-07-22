@@ -68,12 +68,13 @@ STATUS_VALIDOS_STS = {
 # A=0 SHIPMENT  B=1 INVOICE  C=2 BOXES  D=3 ITEMS  E=4 STATUS
 # F=5 STORE LOCATION  G=6 CHANNEL  H=7 SLA STATUS
 # I=8 INVOICE RECEIPT  J=9 ETA/ATA
-# K=10 lt_inv_gl  L=11 lt_arr_id  M=12 lt_id_cc
+# Q=16 lt_inv_gl  R=17 lt_gl_arr  S=18 lt_arr_id
+# T=19 lt_id_cc   V=21 lt_cc_nf   W=22 lt_nf_pod
 # N=13 lt_cc_nf   O=14 lt_nf_pod  P=15 CLIENTE
 COL = {
     "shipment": 0, "invoice": 1, "boxes": 2, "items": 3, "status": 4,
     "loc": 5, "channel": 6, "status_lead": 7, "inv_receipt": 8, "eta": 10,
-    "delivery_date": 15, "lt_ig": 16, "lt_ai": 18, "lt_ic": 19, "lt_cn": 21,
+    "delivery_date": 15, "lt_ig": 16, "lt_ga": 17, "lt_ai": 18, "lt_ic": 19, "lt_cn": 21,
     "lt_np": 22, "brand": 23
 }
 
@@ -506,7 +507,7 @@ HTML_BODY_TEMPLATE = """
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-bottega"></div></div>
   </div>
   <div class="grid" style="margin-top:13px">
-    <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-bottega"></div></div>
+    <!-- <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-bottega"></div></div> -->
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-bottega"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-bottega"></div></div>
   </div>
@@ -527,7 +528,7 @@ HTML_BODY_TEMPLATE = """
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-ysl"></div></div>
   </div>
   <div class="grid" style="margin-top:13px">
-    <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-ysl"></div></div>
+    <!-- <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-ysl"></div></div> -->
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-ysl"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-ysl"></div></div>
   </div>
@@ -548,7 +549,7 @@ HTML_BODY_TEMPLATE = """
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-gucci"></div></div>
   </div>
   <div class="grid" style="margin-top:13px">
-    <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-gucci"></div></div>
+    <!-- <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-gucci"></div></div> -->
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-gucci"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-gucci"></div></div>
   </div>
@@ -569,7 +570,7 @@ HTML_BODY_TEMPLATE = """
     <div class="card s4"><h2><span class="cdot" style="background:#f59e0b"></span>Avg Lead Time by Milestone</h2><div id="f-total"></div></div>
   </div>
   <div class="grid" style="margin-top:13px">
-    <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-total"></div></div>
+    <!-- <div class="card s3"><h2><span class="cdot" style="background:#818cf8"></span>Stage</h2><div class="blist" id="stage-total"></div></div> -->
     <div class="card s5"><h2><span class="cdot" style="background:#f59e0b"></span>Status</h2><div class="blist" id="status-total"></div></div>
     <div class="card s4"><h2><span class="cdot" style="background:#3b82f6"></span>PENDING INVOICES VOLUME BY MONTH</h2><div class="ch h200" id="vol-total"></div></div>
   </div>
@@ -606,8 +607,7 @@ const MONTHS={MONTHS_JSON};
 const MLABELS={MLABELS_JSON};
 
 // ── ESTADO ───────────────────────────────────────────────────
-let fMode='eta';
-let fFrom=null, fTo=null;
+const MIN_DATE='2026-04-01';
 let DATA={};
 let DATA_ALL_STS={};
 let tModes={balenciaga:'all',bottega:'all',ysl:'all',gucci:'all',total:'all'};
@@ -704,7 +704,7 @@ function compute(rs){
     const nps=d2.loc.has('SAO')?2:d2.loc.has('RIO')?3:5;
     const ma=fi=>avN(d2.lts.map(r=>r[fi]).filter(v=>isN(v)));
     return{shipment:ship,invoices:d2.invSet.size||d2.lts.length,location:locs,
-      milestones:[{key:'Invoice→GL',val:ma(10),sla:7,color:'#93c5fd'},{key:'ARR→ID Reg',val:ma(11),sla:2,color:'#60a5fa'},{key:'ID Reg→CC',val:ma(12),sla:1,color:'#3b82f6'},{key:'CC→NF',val:ma(13),sla:nps,color:'#2563eb'},{key:'NF→POD',val:ma(14),sla:nps,color:'#1d4ed8'}]};
+      milestones:[{key:'Invoice→GL',val:ma(10),sla:7,color:'#93c5fd'},{key:'GL→ARR',val:ma(11),sla:2,color:'#60a5fa'}, {key:'ARR→ID Reg',val:ma(11),sla:2,color:'#60a5fa'},{key:'ID Reg→CC',val:ma(12),sla:1,color:'#3b82f6'},{key:'CC→NF',val:ma(13),sla:nps,color:'#2563eb'},{key:'NF→POD',val:ma(14),sla:nps,color:'#1d4ed8'}]};
   });
   const aanjo = rs.map(r => r[1]);
   return{color:BRAND_C[brand]||'#3b82f6',transit:uinv-delayedInv,delayed:delayedInv,ships,inv:uinv,boxes,items,pipeline:pipe,stages,statuses,avgs,vol,trend,sla,nfpod,del_list, aanjo};
@@ -714,15 +714,7 @@ function compute(rs){
 function getRows(brand,src){
   src=src||ALL_ROWS;
   let rs=src.filter(r=>r[0]===brand);
-  if(fFrom||fTo){
-    const fi=fMode==='eta'?9:(fMode==='delivery'?16:8);
-    rs=rs.filter(r=>{
-      const d=r[fi];if(!d)return false;
-      if(fFrom&&d<fFrom)return false;
-      if(fTo&&d>fTo)return false;
-      return true;
-    });
-  }
+  rs=rs.filter(r=>r[8] && r[8]>=MIN_DATE);
   return rs;
 }
 
@@ -730,15 +722,7 @@ function getRows(brand,src){
 function getRowsSTS(brand,src){
   src=src||ALL_STS_ROWS;
   let rs=src.filter(r=>r[0]===brand);
-  if(fFrom||fTo){
-    const fi=fMode==='eta'?9:(fMode==='delivery'?16:8);
-    rs=rs.filter(r=>{
-      const d=r[fi];if(!d)return false;
-      if(fFrom&&d<fFrom)return false;
-      if(fTo&&d>fTo)return false;
-      return true;
-    });
-  }
+  rs=rs.filter(r=>r[8] && r[8]>=MIN_DATE);
   return rs;
 }
 
@@ -767,43 +751,6 @@ function recompute(){
   if(DATA.total) DATA.total.color='#22d3ee';
   const totDeliveredRows=['BALENCIAGA','BOTTEGA','GUCCI','YSL'].flatMap(b=>getRows(b,DELIVERED_ROWS));
   DATA.total.delivered=delivStats(totDeliveredRows);
-}
-function setFMode(m){
-  fMode=m;
-  document.getElementById('mode-eta').classList.toggle('active',m==='eta');
-  document.getElementById('mode-receipt').classList.toggle('active',m==='receipt');
-  document.getElementById('f-week').value='';
-  applyFilter();
-}
-function applyWeek(){
-  const w=document.getElementById('f-week').value;
-  if(!w){clearFilter();return;}
-  const [fr,to]=WEEK_RANGES[w]||[];
-  if(fr){
-    fMode='delivery';
-    document.getElementById('f-from').value=fr;
-    document.getElementById('f-to').value=to;
-  }
-  applyFilter();
-}
-function applyFilter(){
-  fFrom=document.getElementById('f-from').value||null;
-  fTo=document.getElementById('f-to').value||null;
-  if(!fFrom&&!fTo){clearFilter();return;}
-  recompute();
-  const total=Object.values(DATA).reduce((s,d)=>s+(d.inv||0),0);
-  const lbl=fMode==='eta'?'ETA':'Invoice Receipt';
-  document.getElementById('fcount').innerHTML=`<strong>${total.toLocaleString()}</strong> processes · ${lbl}: ${fFrom||'—'} → ${fTo||'—'}`;
-  renderAll();
-}
-function clearFilter(){
-  fFrom=null;fTo=null;
-  document.getElementById('f-from').value='';
-  document.getElementById('f-to').value='';
-  document.getElementById('f-week').value='';
-  document.getElementById('fcount').innerHTML='';
-  recompute();
-  renderAll();
 }
 
 // ── TABS ─────────────────────────────────────────────────────
